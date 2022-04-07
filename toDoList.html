@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta text="viewport" content="width=device-width, initial-scale=1.0">
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+    <title>to do list Demo</title>
+    <style>
+        body {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .icon {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .icon i {
+            padding: 0 10px;
+        }
+
+        ul {
+            padding: 0;
+
+        }
+
+        ul li {
+            text-align: start;
+            margin: auto;
+            position: relative;
+            width: 300px;
+            padding: 20px 20px;
+            list-style-type: none;
+            transition: 0.2s;
+
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        ul li:nth-child(odd) {
+            background: #f9f9f9;
+        }
+
+        li.active {
+            text-decoration: line-through;
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+
+        input:focus {
+            outline: none !important;
+            box-shadow: 0 0 10px #719ECE;
+        }
+
+        .addBtn {
+            padding: 10px;
+            background: #d9d9d9;
+            color: #000;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 0;
+        }
+
+        .trash:hover {
+            color: red;
+        }
+
+        .check:hover {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+        <h3>To do list</h3>
+        <input type="text" id="inPut" placeholder="to do ...">
+        <span onclick="addToDoList(0)" class="addBtn">Add</span>
+    </div>
+    <ul id="toDoList" class="todolist">
+    </ul>
+    <script>
+        // const todolist_moc = [{ text: 'Todolist 1', status: 1 }, { text: 'Todolist 2', status: 0 }, { text: 'Todolist 3', status: 1 }, { text: 'Todolist 4', status: 1 }, { text: 'Todolist 5', status: 0 }]
+        var todolist = [];
+        // sessionStorage.setItem("todolist", JSON.stringify(todolist_moc));
+        if (sessionStorage.getItem('todolist')) {
+            // console.log(sessionStorage.getItem('todolist'))
+            const datalist = JSON.parse(sessionStorage.getItem('todolist'))
+            datalist.forEach(element => {
+                document.querySelector('#inPut').value = element.text
+                addToDoList(element.status)
+            });
+        }
+        function addToDoList(status) {
+            var li = document.createElement("li");
+            todolist.push({
+                text: document.querySelector('#inPut').value,
+                status: status
+            })
+            li.append(document.querySelector('#inPut').value);
+            document.querySelector('#inPut').value = ''
+            document.querySelector('#toDoList').append(li)
+            const span = document.createElement('span')
+            const iconCheck = document.createElement('i')
+            const iconTrash = document.createElement('i')
+            iconCheck.className = 'fa fa-check check'
+            iconTrash.className = 'fas fa-trash-alt trash '
+            span.className = 'icon'
+            span.append(iconCheck)
+            span.append(iconTrash)
+            li.append(span)
+            if (status)
+                li.className = 'active'
+            iconCheck.onclick = (event) => {
+                const indexOfObject = todolist.findIndex(object => {
+                    return object.text === event.target.parentNode.parentNode.textContent;
+                });
+                event.target.parentNode.parentNode.classList.toggle('active')
+                todolist[indexOfObject].status = todolist[indexOfObject].status === 0 ? 1 : 0
+                sessionStorage.setItem("todolist", JSON.stringify(todolist));
+            }
+            iconTrash.onclick = (event) => {
+                const indexOfObject = todolist.findIndex(object => {
+                    return object.text === event.target.parentNode.parentNode.textContent;
+                });
+                if (indexOfObject > -1) {
+                    todolist.splice(indexOfObject, 1);
+                }
+                sessionStorage.setItem("todolist", JSON.stringify(todolist));
+                event.target.parentNode.parentNode.remove()
+            }
+            sessionStorage.setItem("todolist", JSON.stringify(todolist));
+        }
+
+
+    </script>
+</body>
+
+</html>
